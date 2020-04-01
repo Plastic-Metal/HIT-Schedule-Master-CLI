@@ -41,7 +41,7 @@ namespace HITScheduleMasterCLI
                 {StartTime = startTime, Length = length});
             return;
         WrongInput:
-            Io?.WriteLine("非法输入。", OutputType.Error);
+            Io?.WriteLine("非法输入。", IoServer.OutputType.Error);
 
         }
         [MsInfo("向课表导入一个JSON描述的课程: ImpCse <.json>")]
@@ -49,7 +49,7 @@ namespace HITScheduleMasterCLI
         {
             if (!File.Exists(path))
             {
-                Io?.WriteLine("未找到文件。", OutputType.Error);
+                Io?.WriteLine("未找到文件。", IoServer.OutputType.Error);
                 return;
             }
             Schedule.Entries.Add(DeserializeObject<ScheduleEntry>(File.ReadAllText(path)));
@@ -68,7 +68,7 @@ namespace HITScheduleMasterCLI
             }
             catch
             {
-                Io?.WriteLine("写入错误。", OutputType.Error);
+                Io?.WriteLine("写入错误。", IoServer.OutputType.Error);
                 Environment.Exit(0);
             }
         }
@@ -115,7 +115,7 @@ namespace HITScheduleMasterCLI
 
             }
             WrongInput:
-            Io?.WriteLine("非法输入。", OutputType.Error);
+            Io?.WriteLine("非法输入。", IoServer.OutputType.Error);
         }
         [MsInfo("导出整张课表：Export <.ics>")]
         public void Export(string path = "")
@@ -134,7 +134,7 @@ namespace HITScheduleMasterCLI
             }
             catch
             {
-                Io?.WriteLine("写入错误。", OutputType.Error);
+                Io?.WriteLine("写入错误。", IoServer.OutputType.Error);
                 Environment.Exit(0);
             }
         }
@@ -167,7 +167,7 @@ namespace HITScheduleMasterCLI
                 outList.Add(($"{i} ".PadLeft(4, '0'), null));
             }
 
-            Io?.WriteLine(outList, OutputType.ListTitle);
+            Io?.WriteLine(outList, IoServer.OutputType.ListTitle);
             for (var i = 0; i < Schedule.Entries.Count; i++)
             {
                 ShowScheduleEntry(i, maxWeek, Schedule.Entries[i]);
@@ -179,19 +179,19 @@ namespace HITScheduleMasterCLI
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             if (!File.Exists(path))
             {
-                Io?.WriteLine("未找到文件。", OutputType.Error);
+                Io?.WriteLine("未找到文件。", IoServer.OutputType.Error);
                 return;
             }
 
             using var fs = File.OpenRead(path);
-            Schedule = new Schedule(fs);
+            Schedule = Schedule.LoadFromStream(fs);
         }
         [MsInfo("从json导入整个课表：LoadJson <.json>")]
         public void LoadJson(string path)
         {
             if (!File.Exists(path))
             {
-                Io?.WriteLine("未找到文件。", OutputType.Error);
+                Io?.WriteLine("未找到文件。", IoServer.OutputType.Error);
                 return;
             }
             Schedule = DeserializeObject<Schedule>(File.ReadAllText(path));
@@ -203,10 +203,10 @@ namespace HITScheduleMasterCLI
                     Io?.ReadLine("输入年份", "1", null), out var year)
                 && year >= 2020 && year <= 2021))
             {
-                Io?.WriteLine("无效输入。", OutputType.Error);
+                Io?.WriteLine("无效输入。", IoServer.OutputType.Error);
                 return;
             }
-            Io?.WriteLine("选择学期：", OutputType.ListTitle);
+            Io?.WriteLine("选择学期：", IoServer.OutputType.ListTitle);
             Io?.AppendWriteLinePrefix();
             Io?.WriteLine("0. 春(默认)");
             Io?.WriteLine("1. 夏");
@@ -215,7 +215,7 @@ namespace HITScheduleMasterCLI
             if (!int.TryParse(
                     Io?.ReadLine("", "0", null), out var s) || s > 2 || s < 0)
             {
-                Io?.WriteLine("无效输入。", OutputType.Error);
+                Io?.WriteLine("无效输入。", IoServer.OutputType.Error);
                 return;
             }
 
@@ -224,7 +224,7 @@ namespace HITScheduleMasterCLI
         [MsInfo("初始化课表")]
         public void Init()
         {
-            Io?.WriteLine("课表尚未初始化，您可以：", OutputType.ListTitle);
+            Io?.WriteLine("课表尚未初始化，您可以：", IoServer.OutputType.ListTitle);
             Io?.AppendWriteLinePrefix();
             //Io?.WriteLine("0. 自动导入(默认)");
             Io?.WriteLine("1. 手动导入XLS(默认)");
@@ -272,7 +272,7 @@ namespace HITScheduleMasterCLI
             }
             catch
             {
-                Io?.WriteLine("写入错误。", OutputType.Error);
+                Io?.WriteLine("写入错误。", IoServer.OutputType.Error);
                 Environment.Exit(0);
             }
         }
